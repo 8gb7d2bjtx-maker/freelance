@@ -1028,17 +1028,48 @@
   }
 
   // ── API ───────────────────────────────────────────────────────
-  async function post(data) {
-    try {
-      await fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-    } catch(e) {
-      showToast('Network error', 'error');
-    }
+  function post(data) {
+    return new Promise((resolve) => {
+      // Use a hidden iframe + form to POST to Apps Script, bypassing CORS
+      const iframeId = 'post_frame_' + Date.now();
+      const formId = 'post_form_' + Date.now();
+
+      const iframe = document.createElement('iframe');
+      iframe.name = iframeId;
+      iframe.id = iframeId;
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = SCRIPT_URL;
+      form.target = iframeId;
+      form.style.display = 'none';
+
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'payload';
+      input.value = JSON.stringify(data);
+      form.appendChild(input);
+      document.body.appendChild(form);
+
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.remove();
+          form.remove();
+          resolve();
+        }, 300);
+      };
+
+      // Resolve after timeout as fallback (iframe may not fire onload for cross-origin)
+      setTimeout(() => {
+        iframe.remove();
+        form.remove();
+        resolve();
+      }, 3000);
+
+      form.submit();
+    });
   }
 
   // ── TAB SWITCH ────────────────────────────────────────────────
