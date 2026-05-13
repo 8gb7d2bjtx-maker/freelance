@@ -98,11 +98,11 @@
     display: flex; align-items: center; justify-content: space-between;
   }
   .add-toggle-btn {
-    background: var(--accent); border: none; color: #fff; border-radius: var(--radius);
+    background: var(--pink2); border: none; color: #fff; border-radius: var(--radius);
     padding: 6px 12px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
     cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all var(--transition);
   }
-  .add-toggle-btn:hover { background: var(--accent2); }
+  .add-toggle-btn:hover { background: var(--pink); }
   .add-toggle-btn.open { background: var(--surface3); color: var(--text2); border: 1px solid var(--border); }
 
   .kanban-with-panel { display: flex; flex: 1; overflow: hidden; }
@@ -155,10 +155,10 @@
   .col-empty { text-align: center; padding: 20px 10px; color: var(--text3); font-size: 12px; font-family: 'DM Mono', monospace; }
 
   /* Column themes */
-  .col-progress .col-dot { background: var(--blue); }
-  .col-progress .col-title { color: var(--blue); }
-  .col-draft .col-dot { background: var(--orange); }
-  .col-draft .col-title { color: var(--orange); }
+  .col-progress .col-dot { background: var(--accent); }
+  .col-progress .col-title { color: var(--accent); }
+  .col-draft .col-dot { background: var(--pink); }
+  .col-draft .col-title { color: var(--pink); }
   .col-final .col-dot { background: var(--green); }
   .col-final .col-title { color: var(--green); }
 
