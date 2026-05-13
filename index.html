@@ -1,1011 +1,2126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Studio Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #e8f3f7;
-    --surface: #ffffff;
-    --surface2: #f0f7fa;
-    --surface3: #e0ecf4;
-    --border: #c8dce8;
-    --border2: #a8c4d8;
-    --text: #1d2b3a;
-    --text2: #4a6478;
-    --text3: #7a9aae;
-    --accent: #0891a8;
-    --accent2: #066d82;
-    --accent-glow: rgba(8,145,168,0.12);
-    --pink: #0891a8;
-    --pink2: #066d82;
-    --pink-glow: rgba(8,145,168,0.12);
-    --green: #2a8c4a;
-    --green-bg: rgba(42,140,74,0.10);
-    --red: #e03a3a;
-    --red-bg: rgba(224,58,58,0.10);
-    --blue: #2e7dd4;
-    --orange: #d4620a;
-    --radius: 8px;
-    --radius-lg: 12px;
-    --transition: 0.18s ease;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Studio Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg: #e8f3f7;
+        --surface: #ffffff;
+        --surface2: #f0f7fa;
+        --surface3: #e0ecf4;
+        --border: #c8dce8;
+        --border2: #a8c4d8;
+        --text: #1d2b3a;
+        --text2: #4a6478;
+        --text3: #7a9aae;
+        --accent: #0891a8;
+        --accent2: #066d82;
+        --accent-glow: rgba(8, 145, 168, 0.12);
+        --pink: #0891a8;
+        --pink2: #066d82;
+        --pink-glow: rgba(8, 145, 168, 0.12);
+        --green: #2a8c4a;
+        --green-bg: rgba(42, 140, 74, 0.10);
+        --red: #e03a3a;
+        --red-bg: rgba(224, 58, 58, 0.10);
+        --blue: #2e7dd4;
+        --orange: #d4620a;
+        --radius: 8px;
+        --radius-lg: 12px;
+        --transition: 0.18s ease;
+    }
 
-  /* ── LAYOUT ── */
-  .app-shell { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-  header {
-    background: #1d2b3a; border-bottom: 1px solid #2e3f52;
-    padding: 0 24px; display: flex; align-items: center; gap: 24px;
-    height: 52px; flex-shrink: 0; z-index: 10;
-  }
-  .logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .logo-mark {
-    width: 28px; height: 28px; background: var(--accent); border-radius: 6px;
-    display: flex; align-items: center; justify-content: center; color: #fff;
-  }
-  .logo-mark svg { width: 15px; height: 15px; }
-  .logo-text { font-size: 13px; font-weight: 600; color: #e8f0f7; }
-  .logo-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(232,240,247,0.5); letter-spacing: 0.08em; text-transform: uppercase; }
-  .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    body {
+        font-family: 'DM Sans', sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1.5;
+    }/* ── LAYOUT ── */
 
-  .refresh-btn {
-    background: var(--surface2); border: 1px solid var(--border); color: var(--text3);
-    border-radius: var(--radius); width: 30px; height: 30px;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-    transition: all var(--transition);
-  }
-  .refresh-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
-  .refresh-btn svg { transition: transform 0.6s ease; }
-  .refresh-btn.spinning svg { transform: rotate(360deg); }
+    .app-shell {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+    }
 
-  /* ── TABS ── */
-  nav { display: flex; align-items: center; height: 100%; }
-  .tab-btn {
-    background: none; border: none; color: rgba(232,240,247,0.5); padding: 0 14px;
-    height: 52px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-    cursor: pointer; position: relative; transition: color var(--transition); white-space: nowrap;
-  }
-  .tab-btn::after {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-    background: var(--accent); transform: scaleX(0); transition: transform var(--transition);
-    border-radius: 2px 2px 0 0;
-  }
-  .tab-btn:hover { color: rgba(232,240,247,0.8); }
-  .tab-btn.active { color: #e8f0f7; }
-  .tab-btn.active::after { transform: scaleX(1); }
-  .tab-count {
-    display: inline-flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.12); color: rgba(232,240,247,0.6); font-family: 'DM Mono', monospace;
-    font-size: 10px; padding: 1px 6px; border-radius: 20px; margin-left: 6px; min-width: 20px;
-    transition: all var(--transition);
-  }
-  .tab-btn.active .tab-count { background: var(--accent-glow); color: var(--accent); }
+    header {
+        background: #1d2b3a;
+        border-bottom: 1px solid #2e3f52;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        height: 52px;
+        flex-shrink: 0;
+        z-index: 10;
+    }
 
-  /* ── MAIN ── */
-  main { flex: 1; overflow: hidden; }
-  .tab-panel { display: none; height: 100%; overflow-y: auto; }
-  .tab-panel.active { display: flex; flex-direction: column; }
-  #tab-active { overflow: hidden; }
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+    }
 
-  /* ── KANBAN AREA ── */
-  .kanban-header {
-    padding: 12px 24px 10px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .add-toggle-btn {
-    background: var(--pink2); border: none; color: #fff; border-radius: var(--radius);
-    padding: 6px 12px; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
-    cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all var(--transition);
-  }
-  .add-toggle-btn:hover { background: var(--pink); }
-  .add-toggle-btn.open { background: var(--surface3); color: var(--text2); border: 1px solid var(--border); }
+    .logo-mark {
+        width: 28px;
+        height: 28px;
+        background: var(--accent);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+    }
 
-  .kanban-with-panel { display: flex; flex: 1; overflow: hidden; }
+    .logo-mark svg {
+        width: 15px;
+        height: 15px;
+    }
 
-  .kanban-board {
-    display: flex; flex-direction: column; gap: 10px;
-    padding: 2px 24px 24px; overflow-y: auto; flex: 1; min-width: 0;
-  }
+    .logo-text {
+        font-size: 13px;
+        font-weight: 600;
+        color: #e8f0f7;
+    }
 
-  /* ── ADD PANEL ── */
-  .add-panel {
-    width: 0; flex-shrink: 0; overflow: hidden; background: var(--surface);
-    border-left: 1px solid var(--border); display: flex; flex-direction: column;
-    transition: width 0.3s cubic-bezier(0.16,1,0.3,1);
-  }
-  .add-panel.open { width: 300px; }
-  .add-panel-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 13px 16px 11px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-  }
-  .add-panel-title { font-size: 13px; font-weight: 600; color: var(--text); }
-  .panel-close {
-    background: none; border: none; color: var(--text3); font-size: 14px; cursor: pointer;
-    border-radius: var(--radius); padding: 3px 6px; transition: all var(--transition); line-height: 1;
-  }
-  .panel-close:hover { color: var(--text); background: var(--surface3); }
-  .add-panel-body { padding: 15px; overflow-y: auto; flex: 1; }
+    .logo-sub {
+        font-family: 'DM Mono', monospace;
+        font-size: 10px;
+        color: rgba(232, 240, 247, 0.5);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
 
-  /* ── COLUMNS ── */
-  .kanban-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .kanban-col {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); display: flex; flex-direction: column;
-    min-height: 100px; overflow: hidden;
-  }
-  .col-header {
-    padding: 10px 12px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
-  }
-  .col-title {
-    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
-    text-transform: uppercase; display: flex; align-items: center; gap: 7px;
-  }
-  .col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .col-count {
-    font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3);
-    background: var(--surface2); padding: 2px 7px; border-radius: 20px;
-  }
-  .col-cards { padding: 7px; flex: 1; display: flex; flex-direction: column; gap: 5px; overflow-y: auto; }
-  .col-empty { text-align: center; padding: 20px 10px; color: var(--text3); font-size: 12px; font-family: 'DM Mono', monospace; }
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-left: auto;
+    }
 
-  /* Column themes */
-  .col-progress .col-dot { background: #4a8fb5; }
-  .col-progress .col-title { color: #4a8fb5; }
-  .col-draft .col-dot { background: #2a7a9e; }
-  .col-draft .col-title { color: #2a7a9e; }
-  .col-final .col-dot { background: #0891a8; }
-  .col-final .col-title { color: #0891a8; }
+    .refresh-btn {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text3);
+        border-radius: var(--radius);
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all var(--transition);
+    }
 
-  /* ── CARDS ── */
-  .project-card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 7px 10px; display: flex; align-items: center; gap: 6px;
-    transition: border-color var(--transition), box-shadow var(--transition);
-  }
-  .project-card:hover { border-color: var(--border2); box-shadow: 0 1px 5px rgba(0,0,0,0.07); }
-  .project-card.focused {
-    border-color: var(--pink);
-    box-shadow: inset 3px 0 0 var(--pink), 0 1px 5px rgba(0,0,0,0.07);
-  }
-  .project-card.focused .card-name { font-weight: 600; color: var(--pink2); }
+    .refresh-btn:hover {
+        background: var(--surface3);
+        color: var(--text);
+        border-color: var(--border2);
+    }
 
-  .card-name {
-    font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3;
-    flex: 1; min-width: 0; cursor: pointer;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .card-actions { display: flex; align-items: center; gap: 1px; flex-shrink: 0; }
-  .card-due {
-    font-size: 11px; color: var(--text3); margin-right: 3px; flex-shrink: 0;
-    font-family: 'DM Sans', sans-serif;
-  }
-  .card-due.overdue { color: var(--red); }
-  .card-due.soon { color: var(--orange); }
+    .refresh-btn svg {
+        transition: transform 0.6s ease;
+    }
 
-  .card-btn {
-    background: none; border: none; color: var(--text3); font-size: 13px;
-    padding: 3px 6px; cursor: pointer; border-radius: var(--radius);
-    transition: all var(--transition); flex-shrink: 0; line-height: 1;
-  }
-  .card-btn:hover { background: var(--surface3); color: var(--text2); }
-  .card-btn.notes:hover { color: var(--accent); background: var(--accent-glow); }
-  .card-btn.notes.has-notes { color: var(--accent); }
-  .card-btn.done:hover { color: var(--green); background: var(--green-bg); }
-  .card-btn.del:hover { color: var(--red); background: var(--red-bg); }
+    .refresh-btn.spinning svg {
+        transform: rotate(360deg);
+    }/* ── TABS ── */
 
-  /* Drag and drop */
-  .project-card { cursor: grab; user-select: none; }
-  .project-card.dragging { opacity: 0.4; cursor: grabbing; }
-  .project-card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
-  .kanban-col.drop-target { border-color: var(--accent); background: color-mix(in srgb, var(--surface) 94%, var(--accent) 6%); }
+    nav {
+        display: flex;
+        align-items: center;
+        height: 100%;
+    }
 
-  /* ── SUMMARY TAB ── */
-  #tab-summary { padding: 0; overflow-y: auto; }
-  .summary-inner { padding: 20px 24px 32px; display: flex; flex-direction: column; gap: 18px; max-width: 860px; }
-  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px; }
-  .chart-card h3 {
-    font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 16px;
-    letter-spacing: 0.06em; text-transform: uppercase; display: flex; align-items: center; gap: 7px;
-  }
-  .chart-inner { display: flex; flex-direction: column; gap: 7px; }
-  .bar-row { display: flex; align-items: center; gap: 10px; }
-  .bar-label { font-size: 12px; color: var(--text2); min-width: 150px; text-align: right; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar-track { flex: 1; height: 20px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s cubic-bezier(0.16,1,0.3,1); min-width: 2px; }
-  .bar-value { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); min-width: 50px; text-align: left; flex-shrink: 0; }
+    .tab-btn {
+        background: none;
+        border: none;
+        color: rgba(232, 240, 247, 0.5);
+        padding: 0 14px;
+        height: 52px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        transition: color var(--transition);
+        white-space: nowrap;
+    }
 
-  /* ── FORMS ── */
-  .form-group { margin-bottom: 13px; }
-  label {
-    display: block; font-size: 11px; font-weight: 600; color: var(--text2);
-    margin-bottom: 5px; letter-spacing: 0.04em; text-transform: uppercase;
-  }
-  input, textarea, select {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius); color: var(--text); font-family: 'DM Sans', sans-serif;
-    font-size: 16px; padding: 8px 10px; outline: none;
-    transition: border-color var(--transition), box-shadow var(--transition);
-    -webkit-appearance: none;
-  }
-  input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
-  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
-  select { cursor: pointer; }
-  .btn-primary {
-    background: var(--accent); border: none; color: #fff; border-radius: var(--radius);
-    padding: 9px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all var(--transition); display: flex;
-    align-items: center; justify-content: center; gap: 7px; width: 100%; margin-top: 4px;
-  }
-  .btn-primary:hover { background: var(--accent2); }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .tab-btn::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transition: transform var(--transition);
+        border-radius: 2px 2px 0 0;
+    }
 
-  /* ── MODALS ── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.28);
-    z-index: 100; align-items: center; justify-content: center; padding: 24px;
-    backdrop-filter: blur(3px);
-  }
-  .modal-overlay.open { display: flex; }
-  @keyframes modal-in { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .tab-btn:hover {
+        color: rgba(232, 240, 247, 0.8);
+    }
 
-  /* Details modal */
-  .details-modal {
-    background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg);
-    padding: 22px; width: 100%; max-width: 430px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.13); animation: modal-in 0.18s cubic-bezier(0.34,1.2,0.64,1);
-  }
-  .modal-hdr { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 13px; gap: 10px; }
-  .modal-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
-  .modal-sub-title { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-top: 2px; }
-  .modal-close-btn {
-    background: none; border: none; color: var(--text3); font-size: 15px; cursor: pointer;
-    border-radius: var(--radius); padding: 2px 5px; transition: all var(--transition); flex-shrink: 0; line-height: 1;
-  }
-  .modal-close-btn:hover { color: var(--text); background: var(--surface3); }
+    .tab-btn.active {
+        color: #e8f0f7;
+    }
 
-  .collapsible-toggle {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
-    color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
-    padding: 7px 11px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 6px;
-    transition: all var(--transition); margin-bottom: 0;
-  }
-  .collapsible-toggle:hover { background: var(--surface3); color: var(--text); }
-  .collapsible-toggle.open { border-radius: var(--radius) var(--radius) 0 0; border-bottom-color: transparent; }
-  .collapsible-toggle .arr { font-size: 8px; transition: transform 0.2s ease; }
-  .collapsible-toggle.open .arr { transform: rotate(90deg); }
+    .tab-btn.active::after {
+        transform: scaleX(1);
+    }
 
-  .collapsible-body {
-    display: none; background: var(--surface2); border: 1px solid var(--border);
-    border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 13px; margin-bottom: 11px;
-  }
-  .collapsible-body.open { display: block; }
-  .collapsible-body .form-group { margin-bottom: 10px; }
-  .collapsible-body .form-group:last-of-type { margin-bottom: 0; }
+    .tab-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(232, 240, 247, 0.6);
+        font-family: 'DM Mono', monospace;
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 20px;
+        margin-left: 6px;
+        min-width: 20px;
+        transition: all var(--transition);
+    }
 
-  .notes-preview {
-    display: none; font-size: 13px; line-height: 1.6; color: var(--text);
-    background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 9px 11px; margin-bottom: 8px; white-space: pre-wrap; word-break: break-word;
-  }
-  .save-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-  .save-btn {
-    background: var(--accent); border: none; color: #fff; border-radius: var(--radius);
-    padding: 6px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: background var(--transition);
-  }
-  .save-btn:hover { background: var(--accent2); }
-  .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .save-status { font-size: 11px; font-family: 'DM Mono', monospace; }
+    .tab-btn.active .tab-count {
+        background: var(--accent-glow);
+        color: var(--accent);
+    }/* ── MAIN ── */
 
+    main {
+        flex: 1;
+        overflow: hidden;
+    }
 
+    .tab-panel {
+        display: none;
+        height: 100%;
+        overflow-y: auto;
+    }
 
-  /* Complete modal */
-  .complete-modal {
-    background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg);
-    padding: 22px; width: 100%; max-width: 390px;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.13); animation: modal-in 0.18s cubic-bezier(0.34,1.2,0.64,1);
-  }
-  .complete-modal h3 { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
-  .complete-modal .sub { font-size: 11px; color: var(--text3); font-family: 'DM Mono', monospace; margin-bottom: 13px; }
-  .proj-pill {
-    font-weight: 600; color: var(--accent); font-size: 13px;
-    background: var(--accent-glow); border-radius: var(--radius); padding: 7px 11px; margin-bottom: 15px;
-  }
-  .modal-footer { display: flex; gap: 10px; margin-top: 16px; }
-  .btn-cancel {
-    flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text2);
-    border-radius: var(--radius); padding: 9px; font-family: 'DM Sans', sans-serif; font-size: 13px;
-    cursor: pointer; transition: all var(--transition);
-  }
-  .btn-cancel:hover { background: var(--surface3); color: var(--text); }
-  .btn-confirm {
-    flex: 2; background: var(--green); border: none; color: #fff; border-radius: var(--radius);
-    padding: 9px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: filter var(--transition);
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .btn-confirm:hover { filter: brightness(1.08); }
-  .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+    .tab-panel.active {
+        display: flex;
+        flex-direction: column;
+    }
 
-  /* ── COMPLETED TAB ── */
-  .filter-row {
-    display: flex; gap: 8px; padding: 14px 24px 0; align-items: center; flex-shrink: 0;
-  }
-  .filter-row select {
-    background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius);
-    color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px;
-    padding: 7px 10px; cursor: pointer; flex: 1; min-width: 0; outline: none; -webkit-appearance: none;
-  }
-  .filter-row select:focus { border-color: var(--accent); }
+    #tab-active {
+        overflow: hidden;
+    }/* ── KANBAN AREA ── */
 
-  .table-section { padding: 12px 24px 24px; }
-  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  thead th {
-    text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; color: var(--text3);
-    letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 1px solid var(--border); background: var(--surface2);
-  }
-  tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
-  tbody tr:hover td { background: var(--surface2); }
-  tbody tr:last-child td { border-bottom: none; }
-  .td-mono { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text2); }
-  .td-amount { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--green); }
-  .td-client { font-size: 12px; color: var(--text2); }
+    .kanban-header {
+        padding: 12px 24px 10px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 
-  .total-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 10px 14px; border-top: 2px solid var(--border); background: var(--surface2);
-  }
-  .total-label { font-size: 11px; font-weight: 600; color: var(--text2); letter-spacing: 0.04em; text-transform: uppercase; }
-  .total-amount { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 600; color: var(--green); }
+    .add-toggle-btn {
+        background: var(--pink2);
+        border: none;
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 6px 12px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all var(--transition);
+    }
 
-  .empty-state { text-align: center; padding: 36px 24px; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 12px; }
+    .add-toggle-btn:hover {
+        background: var(--pink);
+    }
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg);
-    padding: 11px 18px; color: var(--text); font-size: 13px; font-weight: 500;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.10); z-index: 999; pointer-events: none;
-    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: var(--green); }
-  .toast.error { border-color: var(--red); }
+    .add-toggle-btn.open {
+        background: var(--surface3);
+        color: var(--text2);
+        border: 1px solid var(--border);
+    }
 
-  /* ── SPINNER / LOADING ── */
-  .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading { display: flex; align-items: center; justify-content: center; padding: 36px; color: var(--text3); font-family: 'DM Mono', monospace; font-size: 12px; gap: 10px; flex-direction: column; }
+    .kanban-with-panel {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+    .kanban-board {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 2px 24px 24px;
+        overflow-y: auto;
+        flex: 1;
+        min-width: 0;
+    }/* ── ADD PANEL ── */
 
-  /* ── RESPONSIVE ── */
-  @media (max-width: 800px) {
-    .kanban-row { grid-template-columns: 1fr; }
-    header { padding: 0 14px; gap: 12px; }
-    .logo-sub { display: none; }
-    .kanban-board { padding: 2px 14px 20px; }
-    .add-panel.open { width: 100%; }
-    #tab-active { overflow-y: auto; }
-    .kanban-with-panel { flex-direction: column; overflow: visible; flex: none; }
-    .add-panel { width: 100% !important; height: 0; border-left: none; border-bottom: 1px solid var(--border); order: -1; transition: height 0.3s cubic-bezier(0.16,1,0.3,1); }
-    .add-panel.open { height: auto; max-height: 80vh; overflow-y: auto; }
-  }
-</style>
+    .add-panel {
+        width: 0;
+        flex-shrink: 0;
+        overflow: hidden;
+        background: var(--surface);
+        border-left: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .add-panel.open {
+        width: 300px;
+    }
+
+    .add-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 13px 16px 11px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    .add-panel-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    .panel-close {
+        background: none;
+        border: none;
+        color: var(--text3);
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: var(--radius);
+        padding: 3px 6px;
+        transition: all var(--transition);
+        line-height: 1;
+    }
+
+    .panel-close:hover {
+        color: var(--text);
+        background: var(--surface3);
+    }
+
+    .add-panel-body {
+        padding: 15px;
+        overflow-y: auto;
+        flex: 1;
+    }/* ── COLUMNS ── */
+
+    .kanban-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+
+    .kanban-col {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        min-height: 100px;
+        overflow: hidden;
+    }
+
+    .col-header {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .col-title {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .col-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .col-count {
+        font-family: 'DM Mono', monospace;
+        font-size: 10px;
+        color: var(--text3);
+        background: var(--surface2);
+        padding: 2px 7px;
+        border-radius: 20px;
+    }
+
+    .col-cards {
+        padding: 7px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        overflow-y: auto;
+    }
+
+    .col-empty {
+        text-align: center;
+        padding: 20px 10px;
+        color: var(--text3);
+        font-size: 12px;
+        font-family: 'DM Mono', monospace;
+    }/* Column themes */
+
+    .col-progress .col-dot {
+        background: #4a8fb5;
+    }
+
+    .col-progress .col-title {
+        color: #4a8fb5;
+    }
+
+    .col-draft .col-dot {
+        background: #2a7a9e;
+    }
+
+    .col-draft .col-title {
+        color: #2a7a9e;
+    }
+
+    .col-final .col-dot {
+        background: #0891a8;
+    }
+
+    .col-final .col-title {
+        color: #0891a8;
+    }/* ── CARDS ── */
+
+    .project-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 7px 10px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .project-card:hover {
+        border-color: var(--border2);
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07);
+    }
+
+    .project-card.focused {
+        border-color: var(--pink);
+        box-shadow: inset 3px 0 0 var(--pink), 0 1px 5px rgba(0, 0, 0, 0.07);
+    }
+
+    .project-card.focused .card-name {
+        font-weight: 600;
+        color: var(--pink2);
+    }
+
+    .card-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text);
+        line-height: 1.3;
+        flex: 1;
+        min-width: 0;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 1px;
+        flex-shrink: 0;
+    }
+
+    .card-due {
+        font-size: 11px;
+        color: var(--text3);
+        margin-right: 3px;
+        flex-shrink: 0;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .card-due.overdue {
+        color: var(--red);
+    }
+
+    .card-due.soon {
+        color: var(--orange);
+    }
+
+    .card-btn {
+        background: none;
+        border: none;
+        color: var(--text3);
+        font-size: 13px;
+        padding: 3px 6px;
+        cursor: pointer;
+        border-radius: var(--radius);
+        transition: all var(--transition);
+        flex-shrink: 0;
+        line-height: 1;
+    }
+
+    .card-btn:hover {
+        background: var(--surface3);
+        color: var(--text2);
+    }
+
+    .card-btn.notes:hover {
+        color: var(--accent);
+        background: var(--accent-glow);
+    }
+
+    .card-btn.notes.has-notes {
+        color: var(--accent);
+    }
+
+    .card-btn.done:hover {
+        color: var(--green);
+        background: var(--green-bg);
+    }
+
+    .card-btn.del:hover {
+        color: var(--red);
+        background: var(--red-bg);
+    }/* Drag and drop */
+
+    .project-card {
+        cursor: grab;
+        user-select: none;
+    }
+
+    .project-card.dragging {
+        opacity: 0.4;
+        cursor: grabbing;
+    }
+
+    .project-card.drag-over {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .kanban-col.drop-target {
+        border-color: var(--accent);
+        background: color-mix(in srgb, var(--surface) 94%, var(--accent) 6%);
+    }/* ── SUMMARY TAB ── */
+
+    #tab-summary {
+        padding: 0;
+        overflow-y: auto;
+    }
+
+    .summary-inner {
+        padding: 20px 24px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        max-width: 860px;
+    }
+
+    .chart-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 20px 22px;
+    }
+
+    .chart-card h3 {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text2);
+        margin-bottom: 16px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+    }
+
+    .chart-inner {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .bar-label {
+        font-size: 12px;
+        color: var(--text2);
+        min-width: 150px;
+        text-align: right;
+        flex-shrink: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .bar-track {
+        flex: 1;
+        height: 20px;
+        background: var(--surface2);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        min-width: 2px;
+    }
+
+    .bar-value {
+        font-family: 'DM Mono', monospace;
+        font-size: 11px;
+        color: var(--text3);
+        min-width: 50px;
+        text-align: left;
+        flex-shrink: 0;
+    }/* ── FORMS ── */
+
+    .form-group {
+        margin-bottom: 13px;
+    }
+
+    label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text2);
+        margin-bottom: 5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    input, textarea, select {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 16px;
+        padding: 8px 10px;
+        outline: none;
+        transition: border-color var(--transition), box-shadow var(--transition);
+        -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 70px;
+        line-height: 1.5;
+    }
+
+    select {
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 9px 16px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        width: 100%;
+        margin-top: 4px;
+    }
+
+    .btn-primary:hover {
+        background: var(--accent2);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }/* ── MODALS ── */
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.28);
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        backdrop-filter: blur(3px);
+    }
+
+    .modal-overlay.open {
+        display: flex;
+    }
+
+    @keyframes modal-in {
+        from {
+            transform: scale(0.94);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }/* Details modal */
+
+    .details-modal {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        width: 100%;
+        max-width: 430px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.13);
+        animation: modal-in 0.18s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .modal-hdr {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 13px;
+        gap: 10px;
+    }
+
+    .modal-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1.3;
+    }
+
+    .modal-sub-title {
+        font-size: 11px;
+        color: var(--text3);
+        font-family: 'DM Mono', monospace;
+        margin-top: 2px;
+    }
+
+    .modal-close-btn {
+        background: none;
+        border: none;
+        color: var(--text3);
+        font-size: 15px;
+        cursor: pointer;
+        border-radius: var(--radius);
+        padding: 2px 5px;
+        transition: all var(--transition);
+        flex-shrink: 0;
+        line-height: 1;
+    }
+
+    .modal-close-btn:hover {
+        color: var(--text);
+        background: var(--surface3);
+    }
+
+    .collapsible-toggle {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text2);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 7px 11px;
+        cursor: pointer;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all var(--transition);
+        margin-bottom: 0;
+    }
+
+    .collapsible-toggle:hover {
+        background: var(--surface3);
+        color: var(--text);
+    }
+
+    .collapsible-toggle.open {
+        border-radius: var(--radius) var(--radius) 0 0;
+        border-bottom-color: transparent;
+    }
+
+    .collapsible-toggle .arr {
+        font-size: 8px;
+        transition: transform 0.2s ease;
+    }
+
+    .collapsible-toggle.open .arr {
+        transform: rotate(90deg);
+    }
+
+    .collapsible-body {
+        display: none;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 var(--radius) var(--radius);
+        padding: 13px;
+        margin-bottom: 11px;
+    }
+
+    .collapsible-body.open {
+        display: block;
+    }
+
+    .collapsible-body .form-group {
+        margin-bottom: 10px;
+    }
+
+    .collapsible-body .form-group:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .notes-preview {
+        display: none;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text);
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 9px 11px;
+        margin-bottom: 8px;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .save-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 8px;
+    }
+
+    .save-btn {
+        background: var(--accent);
+        border: none;
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 6px 14px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background var(--transition);
+    }
+
+    .save-btn:hover {
+        background: var(--accent2);
+    }
+
+    .save-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .save-status {
+        font-size: 11px;
+        font-family: 'DM Mono', monospace;
+    }/* Complete modal */
+
+    .complete-modal {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-lg);
+        padding: 22px;
+        width: 100%;
+        max-width: 390px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.13);
+        animation: modal-in 0.18s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .complete-modal h3 {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .complete-modal .sub {
+        font-size: 11px;
+        color: var(--text3);
+        font-family: 'DM Mono', monospace;
+        margin-bottom: 13px;
+    }
+
+    .proj-pill {
+        font-weight: 600;
+        color: var(--accent);
+        font-size: 13px;
+        background: var(--accent-glow);
+        border-radius: var(--radius);
+        padding: 7px 11px;
+        margin-bottom: 15px;
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text2);
+        border-radius: var(--radius);
+        padding: 9px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all var(--transition);
+    }
+
+    .btn-cancel:hover {
+        background: var(--surface3);
+        color: var(--text);
+    }
+
+    .btn-confirm {
+        flex: 2;
+        background: var(--green);
+        border: none;
+        color: #fff;
+        border-radius: var(--radius);
+        padding: 9px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: filter var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-confirm:hover {
+        filter: brightness(1.08);
+    }
+
+    .btn-confirm:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }/* ── COMPLETED TAB ── */
+
+    .filter-row {
+        display: flex;
+        gap: 8px;
+        padding: 14px 24px 0;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .filter-row select {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        padding: 7px 10px;
+        cursor: pointer;
+        flex: 1;
+        min-width: 0;
+        outline: none;
+        -webkit-appearance: none;
+    }
+
+    .filter-row select:focus {
+        border-color: var(--accent);
+    }
+
+    .table-section {
+        padding: 12px 24px 24px;
+    }
+
+    .table-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    thead th {
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text3);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface2);
+    }
+
+    tbody td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+        vertical-align: middle;
+    }
+
+    tbody tr:hover td {
+        background: var(--surface2);
+    }
+
+    tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .td-mono {
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--text2);
+    }
+
+    .td-amount {
+        font-family: 'DM Mono', monospace;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--green);
+    }
+
+    .td-client {
+        font-size: 12px;
+        color: var(--text2);
+    }
+
+    .total-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-top: 2px solid var(--border);
+        background: var(--surface2);
+    }
+
+    .total-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text2);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .total-amount {
+        font-family: 'DM Mono', monospace;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--green);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 36px 24px;
+        color: var(--text3);
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+    }/* ── TOAST ── */
+
+    .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: var(--radius-lg);
+        padding: 11px 18px;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+        z-index: 999;
+        pointer-events: none;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .toast.show {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success {
+        border-color: var(--green);
+    }
+
+    .toast.error {
+        border-color: var(--red);
+    }/* ── SPINNER / LOADING ── */
+
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 36px;
+        color: var(--text3);
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        gap: 10px;
+        flex-direction: column;
+    }/* ── SCROLLBAR ── */
+
+    ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--text3);
+    }/* ── RESPONSIVE ── */
+
+    @media (max-width: 800px) {
+        .kanban-row {
+            grid-template-columns: 1fr;
+        }
+
+        header {
+            padding: 0 14px;
+            gap: 12px;
+        }
+
+        .logo-sub {
+            display: none;
+        }
+
+        .kanban-board {
+            padding: 2px 14px 20px;
+        }
+
+        .add-panel.open {
+            width: 100%;
+        }
+
+        #tab-active {
+            overflow-y: auto;
+        }
+
+        .kanban-with-panel {
+            flex-direction: column;
+            overflow: visible;
+            flex: none;
+        }
+
+        .add-panel {
+            width: 100% !important;
+            height: 0;
+            border-left: none;
+            border-bottom: 1px solid var(--border);
+            order: -1;
+            transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .add-panel.open {
+            height: auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    }
+    </style>
 </head>
 <body>
-<div class="app-shell">
+    <div class="app-shell">
 
-  <header>
-    <div class="logo">
-      <div class="logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      </div>
-      <div>
-        <div class="logo-text">Studio Tracker</div>
-        <div class="logo-sub">Freelance Projects</div>
-      </div>
+        <header>
+            <div class="logo">
+                <div class="logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"/>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="logo-text">Studio Tracker</div>
+                    <div class="logo-sub">Freelance Projects</div>
+                </div>
+            </div>
+
+            <nav>
+                <button class="tab-btn active" data-tab="active">
+                    Projects 
+                    <span class="tab-count" id="count-active">—</span>
+                </button>
+                <button class="tab-btn" data-tab="completed">
+                    Completed 
+                    <span class="tab-count" id="count-completed">—</span>
+                </button>
+                <button class="tab-btn" data-tab="summary">Summary</button>
+            </nav>
+
+            <div class="header-right"></div>
+        </header>
+
+        <main>
+            <!-- ACTIVE TAB -->
+            <div class="tab-panel active" id="tab-active">
+                <div class="kanban-header">
+                    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
+                        <button class="refresh-btn" id="refresh-btn" onclick="refreshAll(this)" title="Refresh">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="1 4 1 10 7 10"/>
+                                <path d="M3.51 15a9 9 0 1 0 .49-3"/>
+                            </svg>
+                        </button>
+                        <button class="add-toggle-btn" id="add-panel-btn" onclick="toggleAddPanel()">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="16"/>
+                                <line x1="8" y1="12" x2="16" y2="12"/>
+                            </svg>
+
+                                        Add Project
+                                      
+                        </button>
+                    </div>
+                </div>
+
+                <div class="kanban-with-panel">
+                    <div class="kanban-board" id="kanban-board">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading projects…
+                        </div>
+                    </div>
+
+                    <div class="add-panel" id="add-panel">
+                        <div class="add-panel-header">
+                            <span class="add-panel-title">New Project</span>
+                            <button class="panel-close" onclick="toggleAddPanel()">✕</button>
+                        </div>
+                        <div class="add-panel-body">
+                            <div class="form-group">
+                                <label for="add-name">Project Name</label>
+                                <input type="text" id="add-name" placeholder="e.g. Brand Refresh — Acme Co." autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="add-client">Client</label>
+                                <input type="text" id="add-client" placeholder="Client name" autocomplete="off" list="client-list">
+                                <datalist id="client-list"></datalist>
+                            </div>
+                            <div class="form-group">
+                                <label for="add-status">Status</label>
+                                <select id="add-status">
+                                    <option value="In Progress" selected>In Progress</option>
+                                    <option value="1st Draft Submitted">1st Draft Submitted</option>
+                                    <option value="Final Submitted">Final Submitted</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="add-due">
+                                    Due Date 
+                                    <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span>
+                                </label>
+                                <input type="date" id="add-due">
+                            </div>
+                            <div class="form-group">
+                                <label for="add-notes">
+                                    Notes 
+                                    <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span>
+                                </label>
+                                <textarea id="add-notes" placeholder="Revision rounds, contacts, links…" rows="3"></textarea>
+                            </div>
+                            <button class="btn-primary" id="add-submit-btn" onclick="submitAdd()">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+
+                                              Add Project
+                                            
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPLETED TAB -->
+            <div class="tab-panel" id="tab-completed">
+                <div class="filter-row">
+                    <select id="filter-client" onchange="renderCompleted()">
+                        <option value="">All Clients</option>
+                    </select>
+                    <select id="filter-month" onchange="renderCompleted()">
+                        <option value="">All Months</option>
+                    </select>
+                </div>
+                <div class="table-section">
+                    <div class="table-wrap" id="completed-wrap">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            Loading…
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- SUMMARY TAB -->
+            <div class="tab-panel" id="tab-summary">
+                <div class="summary-inner" id="summary-inner">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading…
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
-    <nav>
-      <button class="tab-btn active" data-tab="active">Projects <span class="tab-count" id="count-active">—</span></button>
-      <button class="tab-btn" data-tab="completed">Completed <span class="tab-count" id="count-completed">—</span></button>
-      <button class="tab-btn" data-tab="summary">Summary</button>
-    </nav>
+    <!-- DETAILS MODAL -->
+    <div class="modal-overlay" id="details-modal">
+        <div class="details-modal">
+            <div class="modal-hdr">
+                <div>
+                    <div class="modal-title" id="dm-title">—</div>
+                    <div class="modal-sub-title" id="dm-client">—</div>
+                </div>
+                <button class="modal-close-btn" onclick="closeDetails()">✕</button>
+            </div>
 
-    <div class="header-right"></div>
-  </header>
-
-  <main>
-    <!-- ACTIVE TAB -->
-    <div class="tab-panel active" id="tab-active">
-      <div class="kanban-header">
-        <div style="display:flex;align-items:center;gap:8px;margin-left:auto;">
-          <button class="refresh-btn" id="refresh-btn" onclick="refreshAll(this)" title="Refresh">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3"/></svg>
-          </button>
-          <button class="add-toggle-btn" id="add-panel-btn" onclick="toggleAddPanel()">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            Add Project
-          </button>
-        </div>
-      </div>
-
-      <div class="kanban-with-panel">
-        <div class="kanban-board" id="kanban-board">
-          <div class="loading"><div class="spinner"></div>Loading projects…</div>
-        </div>
-
-        <div class="add-panel" id="add-panel">
-          <div class="add-panel-header">
-            <span class="add-panel-title">New Project</span>
-            <button class="panel-close" onclick="toggleAddPanel()">✕</button>
-          </div>
-          <div class="add-panel-body">
-            <div class="form-group">
-              <label for="add-name">Project Name</label>
-              <input type="text" id="add-name" placeholder="e.g. Brand Refresh — Acme Co." autocomplete="off">
-            </div>
-            <div class="form-group">
-              <label for="add-client">Client</label>
-              <input type="text" id="add-client" placeholder="Client name" autocomplete="off">
-            </div>
-            <div class="form-group">
-              <label for="add-status">Status</label>
-              <select id="add-status">
-                <option value="In Progress" selected>In Progress</option>
-                <option value="1st Draft Submitted">1st Draft Submitted</option>
-                <option value="Final Submitted">Final Submitted</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="add-due">Due Date <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
-              <input type="date" id="add-due">
-            </div>
-            <div class="form-group">
-              <label for="add-notes">Notes <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
-              <textarea id="add-notes" placeholder="Revision rounds, contacts, links…" rows="3"></textarea>
-            </div>
-            <button class="btn-primary" id="add-submit-btn" onclick="submitAdd()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              Add Project
+            <!-- Edit details (collapsible) -->
+            <button class="collapsible-toggle" id="edit-toggle" onclick="toggleEdit()">
+                <span class="arr">▶</span>
+                 Edit Project Details
+                    
             </button>
-          </div>
+            <div class="collapsible-body" id="edit-body">
+                <div class="form-group">
+                    <label for="e-name">Project Name</label>
+                    <input type="text" id="e-name">
+                </div>
+                <div class="form-group">
+                    <label for="e-client">Client</label>
+                    <input type="text" id="e-client">
+                </div>
+                <div class="form-group">
+                    <label for="e-status">Status</label>
+                    <select id="e-status">
+                        <option value="In Progress">In Progress</option>
+                        <option value="1st Draft Submitted">1st Draft Submitted</option>
+                        <option value="Final Submitted">Final Submitted</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="e-due">Due Date</label>
+                    <input type="date" id="e-due">
+                </div>
+                <button class="save-btn" id="edit-save-btn" onclick="saveDetails()" style="width:100%;padding:8px;margin-top:4px;">Save Changes</button>
+                <div class="save-status" id="edit-msg" style="margin-top:6px;min-height:16px;display:block;"></div>
+            </div>
+
+            <!-- Notes -->
+            <div style="margin-top:10px;">
+                <div class="notes-preview" id="notes-preview"></div>
+                <textarea id="notes-ta" placeholder="Add notes, links, context…" rows="3" style="width:100%;"></textarea>
+                <div class="save-row">
+                    <button class="save-btn" id="notes-save-btn" onclick="saveNotes()">Save note</button>
+                    <span class="save-status" id="notes-msg"></span>
+                </div>
+            </div>
+
         </div>
-      </div>
     </div>
 
-    <!-- COMPLETED TAB -->
-    <div class="tab-panel" id="tab-completed">
-      <div class="filter-row">
-        <select id="filter-client" onchange="renderCompleted()"><option value="">All Clients</option></select>
-        <select id="filter-month" onchange="renderCompleted()"><option value="">All Months</option></select>
-      </div>
-      <div class="table-section">
-        <div class="table-wrap" id="completed-wrap">
-          <div class="loading"><div class="spinner"></div>Loading…</div>
+    <!-- COMPLETE MODAL -->
+    <div class="modal-overlay" id="complete-modal">
+        <div class="complete-modal">
+            <h3>Mark as Complete</h3>
+            <div class="sub">Fill in invoicing details</div>
+            <div class="proj-pill" id="cm-name">—</div>
+            <div class="form-group">
+                <label for="cm-month">Month & Year Completed</label>
+                <input type="month" id="cm-month">
+            </div>
+            <div class="form-group">
+                <label for="cm-amount">
+                    Amount Invoiced 
+                    <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span>
+                </label>
+                <input type="text" id="cm-amount" placeholder="e.g. 1500">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeComplete()">Cancel</button>
+                <button class="btn-confirm" id="cm-confirm" onclick="submitComplete()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+
+                            Complete & Invoice
+                          
+                </button>
+            </div>
         </div>
-      </div>
-    </div>
-    <!-- SUMMARY TAB -->
-    <div class="tab-panel" id="tab-summary">
-      <div class="summary-inner" id="summary-inner">
-        <div class="loading"><div class="spinner"></div>Loading…</div>
-      </div>
     </div>
 
-  </main>
-</div>
+    <div class="toast" id="toast"></div>
 
-<!-- DETAILS MODAL -->
-<div class="modal-overlay" id="details-modal">
-  <div class="details-modal">
-    <div class="modal-hdr">
-      <div>
-        <div class="modal-title" id="dm-title">—</div>
-        <div class="modal-sub-title" id="dm-client">—</div>
-      </div>
-      <button class="modal-close-btn" onclick="closeDetails()">✕</button>
-    </div>
+    <script>
+    const SHEET_ID = '1vYX4Y1KYr3g3PAX1pAhQskV0N4bpLPAUK0N-dDWRwnU';
+    const ACTIVE_GID = '0';
+    const COMPLETED_GID = '212579376';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypcU43i-MMIH1jG9N0neeK7p5eUvjxKbzh16FjzqaxK-g8xbntNRnwmzxXay2eu4PD/exec';
 
-    <!-- Edit details (collapsible) -->
-    <button class="collapsible-toggle" id="edit-toggle" onclick="toggleEdit()">
-      <span class="arr">▶</span> Edit Project Details
-    </button>
-    <div class="collapsible-body" id="edit-body">
-      <div class="form-group"><label for="e-name">Project Name</label><input type="text" id="e-name"></div>
-      <div class="form-group"><label for="e-client">Client</label><input type="text" id="e-client"></div>
-      <div class="form-group">
-        <label for="e-status">Status</label>
-        <select id="e-status">
-          <option value="In Progress">In Progress</option>
-          <option value="1st Draft Submitted">1st Draft Submitted</option>
-          <option value="Final Submitted">Final Submitted</option>
-        </select>
-      </div>
-      <div class="form-group"><label for="e-due">Due Date</label><input type="date" id="e-due"></div>
-      <button class="save-btn" id="edit-save-btn" onclick="saveDetails()" style="width:100%;padding:8px;margin-top:4px;">Save Changes</button>
-      <div class="save-status" id="edit-msg" style="margin-top:6px;min-height:16px;display:block;"></div>
-    </div>
+    let active = []; // {id,name,client,due,notes,status}
+    let completed = []; // {id,name,client,month,amount}
+    let notesCache = {};
+    let currentP = null; // open in details modal
+    let completingP = null;
 
-    <!-- Notes -->
-    <div style="margin-top:10px;">
-      <div class="notes-preview" id="notes-preview"></div>
-      <textarea id="notes-ta" placeholder="Add notes, links, context…" rows="3" style="width:100%;"></textarea>
-      <div class="save-row">
-        <button class="save-btn" id="notes-save-btn" onclick="saveNotes()">Save note</button>
-        <span class="save-status" id="notes-msg"></span>
-      </div>
-    </div>
+    // ── INIT ──────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+        setupTabs();
+        loadAll();
+    });
 
+    async function loadAll() {
+        await Promise.all([loadActive(), loadCompleted()]);
+    }
 
-  </div>
-</div>
+    async function refreshAll(btn) {
+        if (btn)
+            btn.classList.add('spinning');
+        await loadAll();
+        setTimeout(() => btn && btn.classList.remove('spinning'), 700);
+    }
 
-<!-- COMPLETE MODAL -->
-<div class="modal-overlay" id="complete-modal">
-  <div class="complete-modal">
-    <h3>Mark as Complete</h3>
-    <div class="sub">Fill in invoicing details</div>
-    <div class="proj-pill" id="cm-name">—</div>
-    <div class="form-group"><label for="cm-month">Month & Year Completed</label><input type="month" id="cm-month"></div>
-    <div class="form-group">
-      <label for="cm-amount">Amount Invoiced <span style="color:var(--text3);font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label>
-      <input type="text" id="cm-amount" placeholder="e.g. 1500">
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" onclick="closeComplete()">Cancel</button>
-      <button class="btn-confirm" id="cm-confirm" onclick="submitComplete()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-        Complete & Invoice
-      </button>
-    </div>
-  </div>
-</div>
+    // ── CSV ───────────────────────────────────────────────────────────
+    function parseCSV(text) {
+        const rows = [];
+        let row = [],
+            f = '',
+            inQ = false;
+        for (let i = 0; i < text.length; i++) {
+            const c = text[i],
+                n = text[i + 1];
+            if (inQ) {
+                if (c === '"' && n === '"') {
+                    f += '"';
+                    i++;
+                } else if (c === '"') {
+                    inQ = false;
+                } else
+                    f += c;
+            }
+            else {
+                if (c === '"') {
+                    inQ = true;
+                } else if (c === ',') {
+                    row.push(f.trim());
+                    f = '';
+                } else if (c === '\r' && n === '\n') {
+                    row.push(f.trim());
+                    rows.push(row);
+                    row = [];
+                    f = '';
+                    i++;
+                } else if (c === '\n' || c === '\r') {
+                    row.push(f.trim());
+                    rows.push(row);
+                    row = [];
+                    f = '';
+                } else
+                    f += c;
+            }
+        }
+        if (f || row.length) {
+            row.push(f.trim());
+            rows.push(row);
+        }
+        return rows.filter(r => r.some(c => c !== ''));
+    }
 
-<div class="toast" id="toast"></div>
+    async function fetchCSV(gid) {
+        const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}&cb=${Date.now()}`);
+        return parseCSV(await r.text());
+    }
 
-<script>
-const SHEET_ID      = '1vYX4Y1KYr3g3PAX1pAhQskV0N4bpLPAUK0N-dDWRwnU';
-const ACTIVE_GID    = '0';
-const COMPLETED_GID = '212579376';
-const SCRIPT_URL    = 'https://script.google.com/macros/s/AKfycbypcU43i-MMIH1jG9N0neeK7p5eUvjxKbzh16FjzqaxK-g8xbntNRnwmzxXay2eu4PD/exec';
+    async function loadActive() {
+        try {
+            const rows = await fetchCSV(ACTIVE_GID);
+            // header: ID | Project Name | Client | Due Date | Notes | Status | Created
+            active = rows.slice(1).filter(r => r[0] && r[0].trim()).map(r => ({
+                id: r[0],
+                name: r[1] || '',
+                client: r[2] || '',
+                due: r[3] || '',
+                notes: r[4] || '',
+                status: r[5] || 'In Progress'
+            }));
+            active.forEach(p => {
+                if (p.notes)
+                    notesCache[p.id] = p.notes;
+            });
+            updateActiveCount();
+            renderKanban();
+            updateClientList();
+        } catch (e) {
+            document.getElementById('kanban-board').innerHTML = '<div class="loading" style="color:var(--red)">⚠ Could not load. Check sheet is shared publicly.</div>';
+        }
+    }
 
-let active    = []; // {id,name,client,due,notes,status}
-let completed = []; // {id,name,client,month,amount}
-let notesCache = {};
-let currentP  = null; // open in details modal
-let completingP = null;
+    async function loadCompleted() {
+        try {
+            const rows = await fetchCSV(COMPLETED_GID);
+            // header: ID | Project Name | Client | Completed Month | Amount Invoiced | Created
+            completed = rows.slice(1).filter(r => r[0] && r[0].trim()).map(r => ({
+                id: r[0],
+                name: r[1] || '',
+                client: r[2] || '',
+                month: r[3] || '',
+                amount: r[4] || ''
+            }));
+            document.getElementById('count-completed').textContent = completed.length;
+            populateFilters();
+            renderCompleted();
+            updateClientList();
+            // Refresh summary if it's currently visible
+            if (document.getElementById('tab-summary').classList.contains('active'))
+                renderSummary();
+        } catch (e) {
+            console.error(e);
+        }
+    }
 
-// ── INIT ──────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => { setupTabs(); loadAll(); });
+    // ── TABS ──────────────────────────────────────────────────────────
+    function setupTabs() {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            if (btn.dataset.tab === 'summary')
+                renderSummary();
+        }));
+    }
 
-async function loadAll() {
-  await Promise.all([loadActive(), loadCompleted()]);
-}
+    // ── ADD PANEL ─────────────────────────────────────────────────────
+    function toggleAddPanel() {
+        const p = document.getElementById('add-panel'),
+            b = document.getElementById('add-panel-btn');
+        const open = p.classList.toggle('open');
+        b.classList.toggle('open', open);
+        if (open)
+            setTimeout(() => document.getElementById('add-name').focus(), 320);
+    }
 
-async function refreshAll(btn) {
-  if (btn) btn.classList.add('spinning');
-  await loadAll();
-  setTimeout(() => btn && btn.classList.remove('spinning'), 700);
-}
+    async function submitAdd() {
+        const name = document.getElementById('add-name').value.trim();
+        const client = document.getElementById('add-client').value.trim();
+        const status = document.getElementById('add-status').value;
+        const due = document.getElementById('add-due').value;
+        const notes = document.getElementById('add-notes').value.trim();
+        if (!name) {
+            document.getElementById('add-name').focus();
+            return;
+        }
+        if (!client) {
+            document.getElementById('add-client').focus();
+            return;
+        }
 
-// ── CSV ───────────────────────────────────────────────────────────
-function parseCSV(text) {
-  const rows = []; let row = [], f = '', inQ = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i], n = text[i+1];
-    if (inQ) { if (c==='"'&&n==='"'){f+='"';i++;} else if(c==='"'){inQ=false;} else f+=c; }
-    else { if(c==='"'){inQ=true;} else if(c===','){row.push(f.trim());f='';} else if(c==='\r'&&n==='\n'){row.push(f.trim());rows.push(row);row=[];f='';i++;} else if(c==='\n'||c==='\r'){row.push(f.trim());rows.push(row);row=[];f='';} else f+=c; }
-  }
-  if(f||row.length){row.push(f.trim());rows.push(row);}
-  return rows.filter(r=>r.some(c=>c!==''));
-}
+        const btn = document.getElementById('add-submit-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-width:2px;"></div> Adding…';
 
-async function fetchCSV(gid) {
-  const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}&cb=${Date.now()}`);
-  return parseCSV(await r.text());
-}
+        await post({
+            action: 'addProject',
+            id: 'p_' + Date.now(),
+            projectName: name,
+            clientName: client,
+            dueDate: due,
+            notes,
+            status
+        });
 
-async function loadActive() {
-  try {
-    const rows = await fetchCSV(ACTIVE_GID);
-    // header: ID | Project Name | Client | Due Date | Notes | Status | Created
-    active = rows.slice(1).filter(r=>r[0]&&r[0].trim()).map(r=>({
-      id:r[0], name:r[1]||'', client:r[2]||'', due:r[3]||'', notes:r[4]||'', status:r[5]||'In Progress'
-    }));
-    active.forEach(p=>{ if(p.notes) notesCache[p.id]=p.notes; });
-    updateActiveCount(); renderKanban();
-  } catch(e) {
-    document.getElementById('kanban-board').innerHTML = '<div class="loading" style="color:var(--red)">⚠ Could not load. Check sheet is shared publicly.</div>';
-  }
-}
+        showToast(`"${name}" added!`, 'success');
+        ['add-name', 'add-client', 'add-notes', 'add-due'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('add-status').value = 'In Progress';
+        toggleAddPanel();
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Add Project';
+        setTimeout(() => loadActive(), 2200);
+    }
 
-async function loadCompleted() {
-  try {
-    const rows = await fetchCSV(COMPLETED_GID);
-    // header: ID | Project Name | Client | Completed Month | Amount Invoiced | Created
-    completed = rows.slice(1).filter(r=>r[0]&&r[0].trim()).map(r=>({
-      id:r[0], name:r[1]||'', client:r[2]||'', month:r[3]||'', amount:r[4]||''
-    }));
-    document.getElementById('count-completed').textContent = completed.length;
-    populateFilters(); renderCompleted();
-    // Refresh summary if it's currently visible
-    if (document.getElementById('tab-summary').classList.contains('active')) renderSummary();
-  } catch(e) { console.error(e); }
-}
+    // ── KANBAN ────────────────────────────────────────────────────────
+    const COLS = [
+    {
+        status: 'In Progress',
+        cls: 'col-progress',
+        label: 'In Progress'
+    },
+    {
+        status: '1st Draft Submitted',
+        cls: 'col-draft',
+        label: '1st Draft Submitted'
+    },
+    {
+        status: 'Final Submitted',
+        cls: 'col-final',
+        label: 'Final Submitted'
+    },
+    ];
 
-// ── TABS ──────────────────────────────────────────────────────────
-function setupTabs() {
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
-    if (btn.dataset.tab === 'summary') renderSummary();
-  }));
-}
+    function renderKanban() {
+        const board = document.getElementById('kanban-board');
+        board.innerHTML = '';
+        const row = document.createElement('div');
+        row.className = 'kanban-row';
 
-// ── ADD PANEL ─────────────────────────────────────────────────────
-function toggleAddPanel() {
-  const p = document.getElementById('add-panel'), b = document.getElementById('add-panel-btn');
-  const open = p.classList.toggle('open');
-  b.classList.toggle('open', open);
-  if (open) setTimeout(()=>document.getElementById('add-name').focus(), 320);
-}
-
-async function submitAdd() {
-  const name   = document.getElementById('add-name').value.trim();
-  const client = document.getElementById('add-client').value.trim();
-  const status = document.getElementById('add-status').value;
-  const due    = document.getElementById('add-due').value;
-  const notes  = document.getElementById('add-notes').value.trim();
-  if (!name) { document.getElementById('add-name').focus(); return; }
-  if (!client) { document.getElementById('add-client').focus(); return; }
-
-  const btn = document.getElementById('add-submit-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-width:2px;"></div> Adding…';
-
-  await post({ action:'addProject', id:'p_'+Date.now(), projectName:name, clientName:client, dueDate:due, notes, status });
-
-  showToast(`"${name}" added!`, 'success');
-  ['add-name','add-client','add-notes','add-due'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('add-status').value='In Progress';
-  toggleAddPanel();
-  btn.disabled=false;
-  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Add Project';
-  setTimeout(()=>loadActive(), 2200);
-}
-
-// ── KANBAN ────────────────────────────────────────────────────────
-const COLS = [
-  {status:'In Progress',         cls:'col-progress', label:'In Progress'},
-  {status:'1st Draft Submitted', cls:'col-draft',    label:'1st Draft Submitted'},
-  {status:'Final Submitted',     cls:'col-final',    label:'Final Submitted'},
-];
-
-function renderKanban() {
-  const board = document.getElementById('kanban-board');
-  board.innerHTML = '';
-  const row = document.createElement('div');
-  row.className = 'kanban-row';
-
-  COLS.forEach(col => {
-    const projects = active.filter(p=>p.status===col.status);
-    const colEl = document.createElement('div');
-    colEl.className = `kanban-col ${col.cls}`;
-    colEl.innerHTML = `
+        COLS.forEach(col => {
+            const projects = active.filter(p => p.status === col.status);
+            const colEl = document.createElement('div');
+            colEl.className = `kanban-col ${col.cls}`;
+            colEl.innerHTML = `
       <div class="col-header">
-        <div class="col-title"><div class="col-dot"></div>${col.label}</div>
+        <div class="col-title"><div class="col-dot"></div>${
+            col.label}</div>
         <div class="col-count">${projects.length}</div>
       </div>
-      <div class="col-cards" id="col-${col.cls}">
-        ${projects.length===0?'<div class="col-empty">Empty</div>':''}
-      </div>`;
+      <div class="col-cards" id="col-${
+            col.cls}">
+        ${projects.length === 0 ? '<div class="col-empty">Empty</div>' : ''}
+      </div>`
+            ;
 
-    // Drop target handlers
-    colEl.addEventListener('dragover', e => {
-      e.preventDefault(); e.dataTransfer.dropEffect = 'move';
-      colEl.classList.add('drop-target');
-    });
-    colEl.addEventListener('dragleave', e => {
-      if (!colEl.contains(e.relatedTarget)) colEl.classList.remove('drop-target');
-    });
-    colEl.addEventListener('drop', async e => {
-      e.preventDefault(); colEl.classList.remove('drop-target');
-      const id = e.dataTransfer.getData('text/plain');
-      const proj = active.find(p=>p.id===id);
-      if (!proj || proj.status===col.status) return;
-      proj.status = col.status;
-      renderKanban();
-      await post({action:'updateProject', id:proj.id, projectName:proj.name, clientName:proj.client, dueDate:proj.due, notes:proj.notes, status:col.status});
-      setTimeout(()=>loadActive(), 2200);
-    });
+            // Drop target handlers
+            colEl.addEventListener('dragover', e => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                colEl.classList.add('drop-target');
+            });
+            colEl.addEventListener('dragleave', e => {
+                if (!colEl.contains(e.relatedTarget))
+                    colEl.classList.remove('drop-target');
+            });
+            colEl.addEventListener('drop', async e => {
+                e.preventDefault();
+                colEl.classList.remove('drop-target');
+                const id = e.dataTransfer.getData('text/plain');
+                const proj = active.find(p => p.id === id);
+                if (!proj || proj.status === col.status)
+                    return;
+                proj.status = col.status;
+                renderKanban();
+                await post({
+                    action: 'updateProject',
+                    id: proj.id,
+                    projectName: proj.name,
+                    clientName: proj.client,
+                    dueDate: proj.due,
+                    notes: proj.notes,
+                    status: col.status
+                });
+                setTimeout(() => loadActive(), 2200);
+            });
 
-    const cardsEl = colEl.querySelector('.col-cards');
-    projects.forEach(p=>cardsEl.appendChild(makeCard(p)));
-    row.appendChild(colEl);
-  });
+            const cardsEl = colEl.querySelector('.col-cards');
+            projects.forEach(p => cardsEl.appendChild(makeCard(p)));
+            row.appendChild(colEl);
+        });
 
-  board.appendChild(row);
-  updateActiveCount();
-}
+        board.appendChild(row);
+        updateActiveCount();
+    }
 
-function makeCard(p) {
-  const el = document.createElement('div');
-  el.className = 'project-card';
-  el.draggable = true;
-  const hasNotes = !!(notesCache[p.id]||p.notes||'').trim();
-  const dueDisplay = p.due ? fmtDateShort(p.due) : '';
-  let dueClass = 'card-due';
-  if (p.due) {
-    const d=new Date(p.due+'T00:00:00'), now=new Date(); now.setHours(0,0,0,0);
-    const diff=(d-now)/86400000;
-    if(diff<0) dueClass+=' overdue'; else if(diff<=3) dueClass+=' soon';
-  }
-  el.innerHTML = `
+    function makeCard(p) {
+        const el = document.createElement('div');
+        el.className = 'project-card';
+        el.draggable = true;
+        const hasNotes = !!(notesCache[p.id] || p.notes || '').trim();
+        const dueDisplay = p.due ? fmtDateShort(p.due) : '';
+        let dueClass = 'card-due';
+        if (p.due) {
+            const d = new Date(p.due + 'T00:00:00'),
+                now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const diff = (d - now) / 86400000;
+            if (diff < 0)
+                dueClass += ' overdue';
+            else if (diff <= 3)
+                dueClass += ' soon';
+        }
+        el.innerHTML = `
     <div class="card-name" title="${escH(p.name)}">${escH(p.name)}</div>
     <div class="card-actions">
-      ${dueDisplay?`<span class="${dueClass}">${dueDisplay}</span>`:''}
-      <button class="card-btn notes${hasNotes?' has-notes':''}" title="${hasNotes?'View/edit notes':'Add notes'}">🛈</button>
+      ${
+        dueDisplay ? `<span class="${dueClass}">${dueDisplay}</span>` : ''}
+      <button class="card-btn notes${hasNotes ? ' has-notes' : ''}" title="${hasNotes ? 'View/edit notes' : 'Add notes'}">🛈</button>
       <button class="card-btn done" title="Mark complete">✓</button>
       <button class="card-btn del" title="Delete">✕</button>
-    </div>`;
+    </div>`
 
-  // Drag
-  el.addEventListener('dragstart', e => {
-    e.dataTransfer.setData('text/plain', p.id);
-    e.dataTransfer.effectAllowed = 'move';
-    setTimeout(() => el.classList.add('dragging'), 0);
-  });
-  el.addEventListener('dragend', () => el.classList.remove('dragging'));
 
-  // Click name → toggle focused highlight
-  el.querySelector('.card-name').addEventListener('click', e => {
-    e.stopPropagation();
-    el.classList.toggle('focused');
-  });
-  // Notes button → open details modal (notes focused)
-  el.querySelector('.notes').addEventListener('click', e=>{ e.stopPropagation(); openDetails(p, true); });
-  // Double-click name → open details modal for editing
-  el.querySelector('.card-name').addEventListener('dblclick', e=>{ e.stopPropagation(); openDetails(p); });
-  el.querySelector('.done').addEventListener('click', e=>{ e.stopPropagation(); openComplete(p); });
-  el.querySelector('.del').addEventListener('click', async e=>{
-    e.stopPropagation();
-    if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
-    await post({action:'deleteProject',id:p.id});
-    active=active.filter(x=>x.id!==p.id);
-    renderKanban(); showToast(`"${p.name}" deleted`);
-    setTimeout(()=>loadActive(), 2200);
-  });
-  return el;
-}
+        ;
 
-// ── DETAILS MODAL ─────────────────────────────────────────────────
-function openDetails(p, focusNotes=false) {
-  currentP = p;
-  document.getElementById('dm-title').textContent = p.name;
-  document.getElementById('dm-client').textContent = p.client || '';
-  document.getElementById('e-name').value   = p.name;
-  document.getElementById('e-client').value = p.client;
-  document.getElementById('e-status').value = p.status;
-  document.getElementById('e-due').value    = p.due;
-  document.getElementById('edit-msg').textContent = '';
-  document.getElementById('edit-save-btn').disabled = false;
-  document.getElementById('edit-body').classList.remove('open');
-  document.getElementById('edit-toggle').classList.remove('open');
+        // Drag
+        el.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', p.id);
+            e.dataTransfer.effectAllowed = 'move';
+            setTimeout(() => el.classList.add('dragging'), 0);
+        });
+        el.addEventListener('dragend', () => el.classList.remove('dragging'));
 
-  const savedNote = notesCache[p.id]||p.notes||'';
-  const ta = document.getElementById('notes-ta');
-  const prev = document.getElementById('notes-preview');
-  ta.value = savedNote;
-  document.getElementById('notes-msg').textContent='';
-  document.getElementById('notes-save-btn').disabled=false;
-
-  if (savedNote.trim()&&!focusNotes) {
-    prev.innerHTML=linkify(savedNote); prev.style.display='block';
-    ta.style.display='none';
-    document.getElementById('notes-save-btn').textContent='Edit note';
-  } else {
-    prev.style.display='none'; ta.style.display='block';
-    document.getElementById('notes-save-btn').textContent='Save note';
-  }
-
-  document.getElementById('details-modal').classList.add('open');
-  if (focusNotes||!savedNote.trim()) setTimeout(()=>ta.focus(), 50);
-}
-
-function closeDetails() { document.getElementById('details-modal').classList.remove('open'); currentP=null; }
-
-function toggleEdit() {
-  const b=document.getElementById('edit-body'), t=document.getElementById('edit-toggle');
-  b.classList.toggle('open'); t.classList.toggle('open', b.classList.contains('open'));
-}
-
-async function saveDetails() {
-  if (!currentP) return;
-  const btn=document.getElementById('edit-save-btn'), msg=document.getElementById('edit-msg');
-  const name=document.getElementById('e-name').value.trim();
-  const client=document.getElementById('e-client').value.trim();
-  const status=document.getElementById('e-status').value;
-  const due=document.getElementById('e-due').value;
-  if (!name){msg.textContent='Name cannot be empty';msg.style.color='var(--red)';return;}
-  btn.disabled=true; msg.textContent='Saving…'; msg.style.color='var(--text3)';
-  await post({action:'updateProject',id:currentP.id,projectName:name,clientName:client,dueDate:due,notes:currentP.notes,status});
-  const proj=active.find(x=>x.id===currentP.id);
-  if(proj){proj.name=name;proj.client=client;proj.status=status;proj.due=due;}
-  currentP={...currentP,name,client,status,due};
-  document.getElementById('dm-title').textContent=name;
-  document.getElementById('dm-client').textContent=client;
-  renderKanban();
-  msg.textContent='Saved ✓'; msg.style.color='var(--green)'; btn.disabled=false;
-  setTimeout(()=>{msg.textContent='';},2000);
-  setTimeout(()=>loadActive(),2200);
-}
-
-async function saveNotes() {
-  if (!currentP) return;
-  const btn=document.getElementById('notes-save-btn'), msg=document.getElementById('notes-msg');
-  const ta=document.getElementById('notes-ta'), prev=document.getElementById('notes-preview');
-  if (btn.textContent==='Edit note') {
-    prev.style.display='none'; ta.style.display='block';
-    btn.textContent='Save note'; setTimeout(()=>ta.focus(),50); return;
-  }
-  const val=ta.value.trim();
-  btn.disabled=true; msg.textContent='Saving…'; msg.style.color='var(--text3)';
-  await post({action:'updateProject',id:currentP.id,projectName:currentP.name,clientName:currentP.client,dueDate:currentP.due,notes:val,status:currentP.status});
-  notesCache[currentP.id]=val;
-  const proj=active.find(x=>x.id===currentP.id); if(proj) proj.notes=val;
-  document.querySelectorAll('.card-name').forEach(el=>{
-    if(el.textContent===currentP.name){
-      const nb=el.closest('.project-card')?.querySelector('.notes');
-      if(nb){nb.classList.toggle('has-notes',val.length>0);nb.title=val.length>0?'View/edit notes':'Add notes';}
+        // Click name → toggle focused highlight
+        el.querySelector('.card-name').addEventListener('click', e => {
+            e.stopPropagation();
+            el.classList.toggle('focused');
+        });
+        // Notes button → open details modal (notes focused)
+        el.querySelector('.notes').addEventListener('click', e => {
+            e.stopPropagation();
+            openDetails(p, true);
+        });
+        // Double-click name → open details modal for editing
+        el.querySelector('.card-name').addEventListener('dblclick', e => {
+            e.stopPropagation();
+            openDetails(p);
+        });
+        el.querySelector('.done').addEventListener('click', e => {
+            e.stopPropagation();
+            openComplete(p);
+        });
+        el.querySelector('.del').addEventListener('click', async e => {
+            e.stopPropagation();
+            if (!confirm(`Delete "${p.name}"? This cannot be undone.`))
+                return;
+            await post({
+                action: 'deleteProject',
+                id: p.id
+            });
+            active = active.filter(x => x.id !== p.id);
+            renderKanban();
+            showToast(`"${p.name}" deleted`);
+            setTimeout(() => loadActive(), 2200);
+        });
+        return el;
     }
-  });
-  msg.textContent='Saved ✓'; msg.style.color='var(--green)'; btn.disabled=false;
-  if(val){prev.innerHTML=linkify(val);prev.style.display='block';ta.style.display='none';btn.textContent='Edit note';setTimeout(()=>{msg.textContent='';},2000);}
-  else{setTimeout(()=>closeDetails(),900);}
-}
 
-async function deleteFromModal() {
-  if (!currentP) return;
-  if (!confirm(`Delete "${currentP.name}"? This cannot be undone.`)) return;
-  await post({action:'deleteProject',id:currentP.id});
-  active=active.filter(x=>x.id!==currentP.id);
-  closeDetails(); renderKanban(); showToast(`"${currentP.name}" deleted`);
-  setTimeout(()=>loadActive(),2200);
-}
+    // ── DETAILS MODAL ─────────────────────────────────────────────────
+    function openDetails(p, focusNotes=false) {
+        currentP = p;
+        document.getElementById('dm-title').textContent = p.name;
+        document.getElementById('dm-client').textContent = p.client || '';
+        document.getElementById('e-name').value = p.name;
+        document.getElementById('e-client').value = p.client;
+        document.getElementById('e-status').value = p.status;
+        document.getElementById('e-due').value = p.due;
+        document.getElementById('edit-msg').textContent = '';
+        document.getElementById('edit-save-btn').disabled = false;
+        document.getElementById('edit-body').classList.remove('open');
+        document.getElementById('edit-toggle').classList.remove('open');
 
-// ── COMPLETE MODAL ────────────────────────────────────────────────
-function openComplete(p) {
-  completingP=p;
-  document.getElementById('cm-name').textContent=p.name;
-  const now=new Date();
-  document.getElementById('cm-month').value=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  document.getElementById('cm-amount').value='';
-  const btn=document.getElementById('cm-confirm');
-  btn.disabled=false;
-  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Complete & Invoice';
-  document.getElementById('complete-modal').classList.add('open');
-  setTimeout(()=>document.getElementById('cm-amount').focus(),50);
-}
+        const savedNote = notesCache[p.id] || p.notes || '';
+        const ta = document.getElementById('notes-ta');
+        const prev = document.getElementById('notes-preview');
+        ta.value = savedNote;
+        document.getElementById('notes-msg').textContent = '';
+        document.getElementById('notes-save-btn').disabled = false;
 
-function closeComplete() { document.getElementById('complete-modal').classList.remove('open'); completingP=null; }
+        if (savedNote.trim() && !focusNotes) {
+            prev.innerHTML = linkify(savedNote);
+            prev.style.display = 'block';
+            ta.style.display = 'none';
+            document.getElementById('notes-save-btn').textContent = 'Edit note';
+        } else {
+            prev.style.display = 'none';
+            ta.style.display = 'block';
+            document.getElementById('notes-save-btn').textContent = 'Save note';
+        }
 
-async function submitComplete() {
-  if (!completingP) return;
-  const month=document.getElementById('cm-month').value;
-  const amount=document.getElementById('cm-amount').value.trim();
-  if (!month){document.getElementById('cm-month').focus();return;}
-  const btn=document.getElementById('cm-confirm');
-  btn.disabled=true;
-  btn.innerHTML='<div class="spinner" style="width:13px;height:13px;border-width:2px;"></div> Submitting…';
-  await post({action:'completeProject',id:completingP.id,projectName:completingP.name,clientName:completingP.client,completedMonth:month,amountInvoiced:amount});
-  showToast(`"${completingP.name}" completed! 🎉`,'success');
-  active=active.filter(x=>x.id!==completingP.id);
-  closeComplete(); renderKanban();
-  setTimeout(()=>loadAll(),2200);
-}
+        document.getElementById('details-modal').classList.add('open');
+        if (focusNotes || !savedNote.trim())
+            setTimeout(() => ta.focus(), 50);
+    }
 
-// ── COMPLETED TABLE ───────────────────────────────────────────────
-function populateFilters() {
-  const clients=[...new Set(completed.map(p=>p.client).filter(Boolean))].sort();
-  const months=[...new Set(completed.map(p=>p.month).filter(Boolean))].sort().reverse();
-  const fc=document.getElementById('filter-client'), fm=document.getElementById('filter-month');
-  const cv=fc.value, mv=fm.value;
-  fc.innerHTML='<option value="">All Clients</option>';
-  clients.forEach(c=>fc.add(new Option(c,c)));
-  if(cv) fc.value=cv;
-  fm.innerHTML='<option value="">All Months</option>';
-  months.forEach(m=>fm.add(new Option(fmtMonth(m),m)));
-  if(mv) fm.value=mv;
-}
+    function closeDetails() {
+        document.getElementById('details-modal').classList.remove('open');
+        currentP = null;
+    }
 
-function renderCompleted() {
-  const cf=document.getElementById('filter-client').value;
-  const mf=document.getElementById('filter-month').value;
-  let rows=[...completed];
-  if(cf) rows=rows.filter(p=>p.client===cf);
-  if(mf) rows=rows.filter(p=>p.month===mf);
-  rows.sort((a,b)=>{if(!a.month&&!b.month)return 0;if(!a.month)return 1;if(!b.month)return -1;return b.month.localeCompare(a.month);});
-  const wrap=document.getElementById('completed-wrap');
-  if(rows.length===0){wrap.innerHTML='<div class="empty-state">No completed projects</div>';return;}
-  const total=rows.reduce((s,p)=>s+(parseFloat((p.amount||'0').replace(/[^0-9.]/g,''))||0),0);
-  wrap.innerHTML=`<table><thead><tr><th>Project</th><th>Client</th><th>Completed</th><th>Invoiced</th></tr></thead><tbody>
-    ${rows.map(p=>{const a=parseFloat((p.amount||'0').replace(/[^0-9.]/g,''))||0;return`<tr><td><strong>${escH(p.name)}</strong></td><td class="td-client">${escH(p.client)}</td><td class="td-mono">${fmtMonth(p.month)}</td><td class="td-amount">${a?'$'+a.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2}):'—'}</td></tr>`;}).join('')}
+    function toggleEdit() {
+        const b = document.getElementById('edit-body'),
+            t = document.getElementById('edit-toggle');
+        b.classList.toggle('open');
+        t.classList.toggle('open', b.classList.contains('open'));
+    }
+
+    async function saveDetails() {
+        if (!currentP)
+            return;
+        const btn = document.getElementById('edit-save-btn'),
+            msg = document.getElementById('edit-msg');
+        const name = document.getElementById('e-name').value.trim();
+        const client = document.getElementById('e-client').value.trim();
+        const status = document.getElementById('e-status').value;
+        const due = document.getElementById('e-due').value;
+        if (!name) {
+            msg.textContent = 'Name cannot be empty';
+            msg.style.color = 'var(--red)';
+            return;
+        }
+        btn.disabled = true;
+        msg.textContent = 'Saving…';
+        msg.style.color = 'var(--text3)';
+        await post({
+            action: 'updateProject',
+            id: currentP.id,
+            projectName: name,
+            clientName: client,
+            dueDate: due,
+            notes: currentP.notes,
+            status
+        });
+        const proj = active.find(x => x.id === currentP.id);
+        if (proj) {
+            proj.name = name;
+            proj.client = client;
+            proj.status = status;
+            proj.due = due;
+        }
+        currentP = {
+            ...currentP,
+            name,
+            client,
+            status,
+            due
+        };
+        document.getElementById('dm-title').textContent = name;
+        document.getElementById('dm-client').textContent = client;
+        renderKanban();
+        msg.textContent = 'Saved ✓';
+        msg.style.color = 'var(--green)';
+        btn.disabled = false;
+        setTimeout(() => {
+            msg.textContent = '';
+        }, 2000);
+        setTimeout(() => loadActive(), 2200);
+    }
+
+    async function saveNotes() {
+        if (!currentP)
+            return;
+        const btn = document.getElementById('notes-save-btn'),
+            msg = document.getElementById('notes-msg');
+        const ta = document.getElementById('notes-ta'),
+            prev = document.getElementById('notes-preview');
+        if (btn.textContent === 'Edit note') {
+            prev.style.display = 'none';
+            ta.style.display = 'block';
+            btn.textContent = 'Save note';
+            setTimeout(() => ta.focus(), 50);
+            return;
+        }
+        const val = ta.value.trim();
+        btn.disabled = true;
+        msg.textContent = 'Saving…';
+        msg.style.color = 'var(--text3)';
+        await post({
+            action: 'updateProject',
+            id: currentP.id,
+            projectName: currentP.name,
+            clientName: currentP.client,
+            dueDate: currentP.due,
+            notes: val,
+            status: currentP.status
+        });
+        notesCache[currentP.id] = val;
+        const proj = active.find(x => x.id === currentP.id);
+        if (proj)
+            proj.notes = val;
+        document.querySelectorAll('.card-name').forEach(el => {
+            if (el.textContent === currentP.name) {
+                const nb = el.closest('.project-card')?.querySelector('.notes');
+                if (nb) {
+                    nb.classList.toggle('has-notes', val.length > 0);
+                    nb.title = val.length > 0 ? 'View/edit notes' : 'Add notes';
+                }
+            }
+        });
+        msg.textContent = 'Saved ✓';
+        msg.style.color = 'var(--green)';
+        btn.disabled = false;
+        if (val) {
+            prev.innerHTML = linkify(val);
+            prev.style.display = 'block';
+            ta.style.display = 'none';
+            btn.textContent = 'Edit note';
+            setTimeout(() => {
+                msg.textContent = '';
+            }, 2000);
+        }
+        else {
+            setTimeout(() => closeDetails(), 900);
+        }
+    }
+
+    async function deleteFromModal() {
+        if (!currentP)
+            return;
+        if (!confirm(`Delete "${currentP.name}"? This cannot be undone.`))
+            return;
+        await post({
+            action: 'deleteProject',
+            id: currentP.id
+        });
+        active = active.filter(x => x.id !== currentP.id);
+        closeDetails();
+        renderKanban();
+        showToast(`"${currentP.name}" deleted`);
+        setTimeout(() => loadActive(), 2200);
+    }
+
+    // ── COMPLETE MODAL ────────────────────────────────────────────────
+    function openComplete(p) {
+        completingP = p;
+        document.getElementById('cm-name').textContent = p.name;
+        const now = new Date();
+        document.getElementById('cm-month').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        document.getElementById('cm-amount').value = '';
+        const btn = document.getElementById('cm-confirm');
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Complete & Invoice';
+        document.getElementById('complete-modal').classList.add('open');
+        setTimeout(() => document.getElementById('cm-amount').focus(), 50);
+    }
+
+    function closeComplete() {
+        document.getElementById('complete-modal').classList.remove('open');
+        completingP = null;
+    }
+
+    async function submitComplete() {
+        if (!completingP)
+            return;
+        const month = document.getElementById('cm-month').value;
+        const amount = document.getElementById('cm-amount').value.trim();
+        if (!month) {
+            document.getElementById('cm-month').focus();
+            return;
+        }
+        const btn = document.getElementById('cm-confirm');
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner" style="width:13px;height:13px;border-width:2px;"></div> Submitting…';
+        await post({
+            action: 'completeProject',
+            id: completingP.id,
+            projectName: completingP.name,
+            clientName: completingP.client,
+            completedMonth: month,
+            amountInvoiced: amount
+        });
+        showToast(`"${completingP.name}" completed! 🎉`, 'success');
+        active = active.filter(x => x.id !== completingP.id);
+        closeComplete();
+        renderKanban();
+        setTimeout(() => loadAll(), 2200);
+    }
+
+    // ── COMPLETED TABLE ───────────────────────────────────────────────
+    function populateFilters() {
+        const clients = [...new Set(completed.map(p => p.client).filter(Boolean))].sort();
+        const months = [...new Set(completed.map(p => p.month).filter(Boolean))].sort().reverse();
+        const fc = document.getElementById('filter-client'),
+            fm = document.getElementById('filter-month');
+        const cv = fc.value,
+            mv = fm.value;
+        fc.innerHTML = '<option value="">All Clients</option>';
+        clients.forEach(c => fc.add(new Option(c, c)));
+        if (cv)
+            fc.value = cv;
+        fm.innerHTML = '<option value="">All Months</option>';
+        months.forEach(m => fm.add(new Option(fmtMonth(m), m)));
+        if (mv)
+            fm.value = mv;
+    }
+
+    function renderCompleted() {
+        const cf = document.getElementById('filter-client').value;
+        const mf = document.getElementById('filter-month').value;
+        let rows = [...completed];
+        if (cf)
+            rows = rows.filter(p => p.client === cf);
+        if (mf)
+            rows = rows.filter(p => p.month === mf);
+        rows.sort((a, b) => {
+            if (!a.month && !b.month)
+                return 0;
+            if (!a.month)
+                return 1;
+            if (!b.month)
+                return -1;
+            return b.month.localeCompare(a.month);
+        });
+        const wrap = document.getElementById('completed-wrap');
+        if (rows.length === 0) {
+            wrap.innerHTML = '<div class="empty-state">No completed projects</div>';
+            return;
+        }
+        const total = rows.reduce((s, p) => s + (parseFloat((p.amount || '0').replace(/[^0-9.]/g, '')) || 0), 0);
+        wrap.innerHTML = `<table><thead><tr><th>Project</th><th>Client</th><th>Completed</th><th>Invoiced</th></tr></thead><tbody>
+    ${rows.map(p => {const a = parseFloat((p.amount || '0').replace(/[^0-9.]/g, '')) || 0;return `<tr><td><strong>${escH(p.name)}</strong></td><td class="td-client">${escH(p.client)}</td><td class="td-mono">${fmtMonth(p.month)}</td><td class="td-amount">${a ? '$' + a.toLocaleString('en-US', {minimumFractionDigits: 0,maximumFractionDigits: 2}) : '—'}</td></tr>`;}).join('')}
     </tbody></table>
-    <div class="total-row"><span class="total-label">Total Invoiced</span><span class="total-amount">$${total.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2})}</span></div>`;
-}
+    <div class="total-row"><span class="total-label">Total Invoiced</span><span class="total-amount">$${
+        total.toLocaleString('en-US', {minimumFractionDigits: 0,maximumFractionDigits: 2})}</span></div>`;
+    }
 
-// ── COUNT ─────────────────────────────────────────────────────────
-function updateActiveCount() {
-  document.getElementById('count-active').textContent=active.length;
-}
+    // ── COUNT ─────────────────────────────────────────────────────────
+    function updateActiveCount() {
+        document.getElementById('count-active').textContent = active.length;
+    }
 
-// ── SUMMARY ───────────────────────────────────────────────────────
-function renderSummary() {
-  const el = document.getElementById('summary-inner');
-  if (completed.length === 0) {
-    el.innerHTML = '<div class="empty-state" style="padding:40px;text-align:center;color:var(--text3);font-family:\'DM Mono\',monospace;font-size:12px;">No completed projects yet</div>';
-    return;
-  }
+    // ── SUMMARY ───────────────────────────────────────────────────────
+    function renderSummary() {
+        const el = document.getElementById('summary-inner');
+        if (completed.length === 0) {
+            el.innerHTML = '<div class="empty-state" style="padding:40px;text-align:center;color:var(--text3);font-family:\'DM Mono\',monospace;font-size:12px;">No completed projects yet</div>';
+            return;
+        }
 
-  // ── Completed by Month ──
-  const byMonth = {};
-  completed.forEach(p => { if (p.month) byMonth[p.month] = (byMonth[p.month]||0) + 1; });
-  const monthKeys = Object.keys(byMonth).sort().reverse();
-  const maxMonth = Math.max(...Object.values(byMonth));
+        // ── Completed by Month ──
+        const byMonth = {};
+        completed.forEach(p => {
+            if (p.month)
+                byMonth[p.month] = (byMonth[p.month] || 0) + 1;
+        });
+        const monthKeys = Object.keys(byMonth).sort().reverse();
+        const maxMonth = Math.max(...Object.values(byMonth));
 
-  // ── Completed by Client (count) ──
-  const byClient = {};
-  completed.forEach(p => { if (p.client) byClient[p.client] = (byClient[p.client]||0) + 1; });
-  const clientKeys = Object.keys(byClient).sort((a,b)=>byClient[b]-byClient[a]);
-  const maxClient = Math.max(...Object.values(byClient));
+        // ── Completed by Client (count) ──
+        const byClient = {};
+        completed.forEach(p => {
+            if (p.client)
+                byClient[p.client] = (byClient[p.client] || 0) + 1;
+        });
+        const clientKeys = Object.keys(byClient).sort((a, b) => byClient[b] - byClient[a]);
+        const maxClient = Math.max(...Object.values(byClient));
 
-  // ── Invoiced by Client (amount) ──
-  const byClientAmt = {};
-  completed.forEach(p => {
-    if (!p.client) return;
-    const a = parseFloat((p.amount||'0').replace(/[^0-9.]/g,''))||0;
-    byClientAmt[p.client] = (byClientAmt[p.client]||0) + a;
-  });
-  const amtKeys = Object.keys(byClientAmt).sort((a,b)=>byClientAmt[b]-byClientAmt[a]);
-  const maxAmt = Math.max(...Object.values(byClientAmt));
+        // ── Invoiced by Client (amount) ──
+        const byClientAmt = {};
+        completed.forEach(p => {
+            if (!p.client)
+                return;
+            const a = parseFloat((p.amount || '0').replace(/[^0-9.]/g, '')) || 0;
+            byClientAmt[p.client] = (byClientAmt[p.client] || 0) + a;
+        });
+        const amtKeys = Object.keys(byClientAmt).sort((a, b) => byClientAmt[b] - byClientAmt[a]);
+        const maxAmt = Math.max(...Object.values(byClientAmt));
 
-  const barColor = (cls) => {
-    if (cls==='month') return 'var(--blue)';
-    if (cls==='client') return 'var(--accent)';
-    return 'var(--green)';
-  };
+        const barColor = (cls) => {
+            if (cls === 'month')
+                return 'var(--blue)';
+            if (cls === 'client')
+                return 'var(--accent)';
+            return 'var(--green)';
+        };
 
-  const makeBar = (label, value, max, color, valDisplay) => `
+        const makeBar = (label, value, max, color, valDisplay) => `
     <div class="bar-row">
-      <div class="bar-label" title="${escH(label)}">${escH(label)}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${max>0?Math.round((value/max)*100):0}%;background:${color};"></div></div>
+      <div class="bar-label" title="${
+        escH(label)}">${escH(label)}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${max > 0 ? Math.round((value / max) * 100) : 0}%;background:${color};"></div></div>
       <div class="bar-value">${valDisplay}</div>
-    </div>`;
+    </div>`
+        ;
 
-  el.innerHTML = `
+        el.innerHTML = `
     <div class="chart-card">
       <h3>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Completed by Month
       </h3>
       <div class="chart-inner">
-        ${monthKeys.map(m => makeBar(fmtMonth(m), byMonth[m], maxMonth, 'var(--blue)', byMonth[m])).join('')}
+        ${
+
+
+
+
+
+        monthKeys.map(m => makeBar(fmtMonth(m), byMonth[m], maxMonth, 'var(--blue)', byMonth[m])).join('')}
       </div>
     </div>
 
@@ -1015,7 +2130,16 @@ function renderSummary() {
         Completed by Client
       </h3>
       <div class="chart-inner">
-        ${clientKeys.map(c => makeBar(c, byClient[c], maxClient, 'var(--accent)', byClient[c])).join('')}
+        ${
+
+
+
+
+
+
+
+
+        clientKeys.map(c => makeBar(c, byClient[c], maxClient, 'var(--accent)', byClient[c])).join('')}
       </div>
     </div>
 
@@ -1025,39 +2149,103 @@ function renderSummary() {
         Total Invoiced by Client
       </h3>
       <div class="chart-inner">
-        ${amtKeys.map(c => {
-          const a = byClientAmt[c];
-          const display = '$'+a.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
-          return makeBar(c, a, maxAmt, 'var(--green)', display);
-        }).join('')}
+        ${
+
+
+
+
+
+
+
+
+        amtKeys.map(c => {const a = byClientAmt[c];const display = '$' + a.toLocaleString('en-US', {minimumFractionDigits: 0,maximumFractionDigits: 2});return makeBar(c, a, maxAmt, 'var(--green)', display);}).join('')}
       </div>
-    </div>`;
-}
+    </div>`
 
-// ── POST (iframe) ─────────────────────────────────────────────────
-function post(data) {
-  return new Promise(resolve=>{
-    const id='f_'+Date.now();
-    const iframe=document.createElement('iframe'); iframe.name=id; iframe.style.display='none'; document.body.appendChild(iframe);
-    const form=document.createElement('form'); form.method='POST'; form.action=SCRIPT_URL; form.target=id; form.style.display='none';
-    const inp=document.createElement('input'); inp.type='hidden'; inp.name='payload'; inp.value=JSON.stringify(data);
-    form.appendChild(inp); document.body.appendChild(form);
-    const done=()=>{iframe.remove();form.remove();resolve();};
-    iframe.onload=()=>setTimeout(done,300); setTimeout(done,3500); form.submit();
-  });
-}
+        ;
+    }
 
-// ── HELPERS ───────────────────────────────────────────────────────
-const escH=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const linkify=t=>escH(t).replace(/(https?:\/\/[^\s<]+)/g,'<a href="$1" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline;word-break:break-all;">$1</a>');
-const fmtDateShort=d=>{if(!d)return'';const p=d.split('-');return p.length<3?d:p[1]+'/'+p[2];};
-const fmtMonth=m=>{if(!m)return'—';const p=m.split('-');if(p.length<2)return m;const names=['January','February','March','April','May','June','July','August','September','October','November','December'];return(names[parseInt(p[1])-1]||p[1])+' '+p[0];};
-const showToast=(msg,type)=>{const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(type?' '+type:'');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);};
+    // ── CLIENT AUTOCOMPLETE ───────────────────────────────────────────
+    function updateClientList() {
+        const clients = [...new Set([
+        ...active.map(p => p.client),
+        ...completed.map(p => p.client)
+        ].filter(Boolean))].sort();
+        const dl = document.getElementById('client-list');
+        dl.innerHTML = clients.map(c => `<option value="${escH(c)}">`).join('');
+    }
 
-// Close modals on overlay click + Escape
-document.getElementById('details-modal').addEventListener('click',function(e){if(e.target===this)closeDetails();});
-document.getElementById('complete-modal').addEventListener('click',function(e){if(e.target===this)closeComplete();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDetails();closeComplete();}});
-</script>
+    // ── POST (iframe) ─────────────────────────────────────────────────
+    function post(data) {
+        return new Promise(resolve => {
+            const id = 'f_' + Date.now();
+            const iframe = document.createElement('iframe');
+            iframe.name = id;
+            iframe.style.display = 'none';
+            document.body.appendChild(iframe);
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = SCRIPT_URL;
+            form.target = id;
+            form.style.display = 'none';
+            const inp = document.createElement('input');
+            inp.type = 'hidden';
+            inp.name = 'payload';
+            inp.value = JSON.stringify(data);
+            form.appendChild(inp);
+            document.body.appendChild(form);
+            const done = () => {
+                iframe.remove();
+                form.remove();
+                resolve();
+            };
+            iframe.onload = () => setTimeout(done, 300);
+            setTimeout(done, 3500);
+            form.submit();
+        });
+    }
+
+    // ── HELPERS ───────────────────────────────────────────────────────
+    const escH = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const linkify = t => escH(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:underline;word-break:break-all;">$1</a>');
+    const fmtDateShort = d => {
+        if (!d)
+            return '';
+        const p = d.split('-');
+        return p.length < 3 ? d : p[1] + '/' + p[2];
+    };
+    const fmtMonth = m => {
+        if (!m)
+            return '—';
+        const p = m.split('-');
+        if (p.length < 2)
+            return m;
+        const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        return (names[parseInt(p[1]) - 1] || p[1]) + ' ' + p[0];
+    };
+    const showToast = (msg, type) => {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast' + (type ? ' ' + type : '');
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    };
+
+    // Close modals on overlay click + Escape
+    document.getElementById('details-modal').addEventListener('click', function(e) {
+        if (e.target === this)
+            closeDetails();
+    });
+    document.getElementById('complete-modal').addEventListener('click', function(e) {
+        if (e.target === this)
+            closeComplete();
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closeDetails();
+            closeComplete();
+        }
+    });
+    </script>
 </body>
 </html>
