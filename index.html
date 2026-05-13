@@ -19,9 +19,9 @@
     --accent: #0891a8;
     --accent2: #066d82;
     --accent-glow: rgba(8,145,168,0.12);
-    --pink: #e8256e;
-    --pink2: #c01758;
-    --pink-glow: rgba(232,37,110,0.12);
+    --pink: #0891a8;
+    --pink2: #066d82;
+    --pink-glow: rgba(8,145,168,0.12);
     --green: #2a8c4a;
     --green-bg: rgba(42,140,74,0.10);
     --red: #e03a3a;
@@ -54,12 +54,12 @@
   .header-right { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 
   .refresh-btn {
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(232,240,247,0.7);
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text3);
     border-radius: var(--radius); width: 30px; height: 30px;
     display: flex; align-items: center; justify-content: center; cursor: pointer;
     transition: all var(--transition);
   }
-  .refresh-btn:hover { background: rgba(255,255,255,0.18); color: #e8f0f7; border-color: rgba(255,255,255,0.25); }
+  .refresh-btn:hover { background: var(--surface3); color: var(--text); border-color: var(--border2); }
   .refresh-btn svg { transition: transform 0.6s ease; }
   .refresh-btn.spinning svg { transform: rotate(360deg); }
 
@@ -303,11 +303,7 @@
   .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .save-status { font-size: 11px; font-family: 'DM Mono', monospace; }
 
-  .danger-link {
-    background: none; border: none; color: var(--red); font-family: 'DM Sans', sans-serif;
-    font-size: 12px; cursor: pointer; padding: 0; transition: opacity 0.15s;
-  }
-  .danger-link:hover { opacity: 0.7; }
+
 
   /* Complete modal */
   .complete-modal {
@@ -554,10 +550,7 @@
       </div>
     </div>
 
-    <!-- Delete -->
-    <div style="margin-top:13px;padding-top:11px;border-top:1px solid var(--border);">
-      <button class="danger-link" onclick="deleteFromModal()">Delete project</button>
-    </div>
+
   </div>
 </div>
 
@@ -1022,7 +1015,7 @@ function renderSummary() {
         Completed by Client
       </h3>
       <div class="chart-inner">
-        ${clientKeys.map(c => makeBar(c, byClient[c], maxClient, 'var(--pink)', byClient[c])).join('')}
+        ${clientKeys.map(c => makeBar(c, byClient[c], maxClient, 'var(--accent)', byClient[c])).join('')}
       </div>
     </div>
 
