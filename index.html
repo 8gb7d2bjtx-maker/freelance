@@ -1882,15 +1882,15 @@
         document.getElementById('edit-body').classList.remove('open');
         document.getElementById('edit-toggle').classList.remove('open');
 
-        const savedNote = notesCache[p.id] || p.notes || '';
+        const savedNote = (notesCache[p.id] !== undefined ? notesCache[p.id] : p.notes || '').trim();
         const ta = document.getElementById('notes-ta');
         const prev = document.getElementById('notes-preview');
-        ta.value = savedNote;
+        ta.value = notesCache[p.id] !== undefined ? notesCache[p.id] : p.notes || '';
         document.getElementById('notes-msg').textContent = '';
         document.getElementById('notes-save-btn').disabled = false;
 
         // Always show preview first if note exists; only go to edit mode if focusNotes or no note
-        if (savedNote.trim() && !focusNotes) {
+        if (savedNote && !focusNotes) {
             prev.innerHTML = linkify(savedNote);
             prev.style.display = 'block';
             ta.style.display = 'none';
@@ -1902,7 +1902,7 @@
         }
 
         document.getElementById('details-modal').classList.add('open');
-        if (focusNotes || !savedNote.trim())
+        if (focusNotes || !savedNote)
             setTimeout(() => ta.focus(), 50);
     }
 
