@@ -435,7 +435,6 @@
         text-transform: uppercase;
         padding: 6px 4px 3px;
         margin-top: 4px;
-        border-bottom: 1px solid var(--border);
         margin-bottom: 2px;
     }
 
@@ -480,14 +479,9 @@
         box-shadow: 0 1px 5px rgba(0, 0, 0, 0.07);
     }
 
-    .project-card.focused {
-        border-color: var(--pink);
-        box-shadow: inset 3px 0 0 var(--pink), 0 1px 5px rgba(0, 0, 0, 0.07);
-    }
-
-    .project-card.focused .card-name {
-        font-weight: 600;
-        color: var(--pink2);
+    .project-card.dragging {
+        opacity: 0.4;
+        cursor: grabbing;
     }
 
     .card-name {
@@ -1450,7 +1444,7 @@
             <!-- Notes -->
             <div style="margin-top:10px;">
                 <div class="notes-preview" id="notes-preview"></div>
-                <textarea id="notes-ta" placeholder="Add notes, links, context…" rows="3" style="width:100%;"></textarea>
+                <textarea id="notes-ta" placeholder="Add notes, links, context…" rows="3" style="width:100%;display:none;"></textarea>
                 <div class="save-row">
                     <button class="save-btn" id="notes-save-btn" onclick="saveNotes()">Save note</button>
                     <span class="save-status" id="notes-msg"></span>
@@ -1584,7 +1578,7 @@
                 due: r[3] || '',
                 notes: r[4] || '',
                 status: r[5] || 'In Progress',
-                url: r[6] || ''
+                url: (r[6] && r[6].startsWith('http')) ? r[6] : ''
             }));
             active.forEach(p => {
                 if (p.notes)
@@ -1817,20 +1811,15 @@
         });
         el.addEventListener('dragend', () => el.classList.remove('dragging'));
 
-        // Click name → toggle focused highlight
+        // Click name → open details modal
         el.querySelector('.card-name').addEventListener('click', e => {
             e.stopPropagation();
-            el.classList.toggle('focused');
+            openDetails(p);
         });
-        // Notes button → open details modal (notes focused)
+        // Notes button → open details modal with notes focused
         el.querySelector('.notes').addEventListener('click', e => {
             e.stopPropagation();
             openDetails(p, true);
-        });
-        // Double-click name → open details modal for editing
-        el.querySelector('.card-name').addEventListener('dblclick', e => {
-            e.stopPropagation();
-            openDetails(p);
         });
         el.querySelector('.done').addEventListener('click', e => {
             e.stopPropagation();
