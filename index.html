@@ -1595,13 +1595,13 @@
                 name: r[1] || '',
                 client: r[2] || '',
                 due: r[3] || '',
-                notes: r[4] || '',
+                notes: (r[4] || '').replace(/\r/g, ''),
                 status: r[5] || 'In Progress',
                 url: (r[6] && r[6].startsWith('http')) ? r[6] : ''
             }));
             active.forEach(p => {
                 if (p.notes)
-                    notesCache[p.id] = p.notes;
+                    notesCache[p.id] = p.notes.replace(/\r/g, '');
             });
             updateActiveCount();
             renderKanban();
@@ -1882,14 +1882,15 @@
         document.getElementById('edit-body').classList.remove('open');
         document.getElementById('edit-toggle').classList.remove('open');
 
-        const savedNote = (notesCache[p.id] !== undefined ? notesCache[p.id] : p.notes || '').trim();
+        const rawNote = notesCache[p.id] !== undefined ? notesCache[p.id] : p.notes || '';
+        const savedNote = rawNote.replace(/\r/g, '').trim();
         const ta = document.getElementById('notes-ta');
         const prev = document.getElementById('notes-preview');
-        ta.value = notesCache[p.id] !== undefined ? notesCache[p.id] : p.notes || '';
+        ta.value = rawNote;
         document.getElementById('notes-msg').textContent = '';
         document.getElementById('notes-save-btn').disabled = false;
 
-        // Always show preview first if note exists; only go to edit mode if focusNotes or no note
+        // Show preview if note exists, textarea if not or if focusNotes
         if (savedNote && !focusNotes) {
             prev.innerHTML = linkify(savedNote);
             prev.style.display = 'block';
